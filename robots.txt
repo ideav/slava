@@ -1,0 +1,20 @@
+# robots.txt for slava website
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Yandex-specific: Remove GET parameters that don't affect page content
+# This prevents duplicate indexing of pages with tracking/referral parameters
+User-agent: Yandex
+Clean-param: from
+Clean-param: utm_source
+Clean-param: utm_medium
+Clean-param: utm_campaign
+Clean-param: utm_term
+Clean-param: utm_content
+Clean-param: fbclid
+Clean-param: gclid
+Clean-param: yclid
+Clean-param: ref
+Clean-param: source
