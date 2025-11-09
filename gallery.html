@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Галерея картин Вячеслава Пешкина - пейзажи, натюрморты, реалистическая живопись">
+    <title>Галерея - Вячеслав Пешкин</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Вячеслав Пешкин</h1>
+            <p>Художник-реалист, член Союза художников России</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">О художнике</a></li>
+            <li><a href="gallery.html" class="active">Галерея</a></li>
+            <li><a href="contact.html">Контакты</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">Галерея работ</h2>
+
+        <!-- Фильтры -->
+        <div class="filters">
+            <h3 style="margin-bottom: 1rem;">Фильтры</h3>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="category-filter">Категория:</label>
+                    <select id="category-filter">
+                        <option value="all">Все</option>
+                        <option value="пейзаж">Пейзаж</option>
+                        <option value="морской пейзаж">Морской пейзаж</option>
+                        <option value="натюрморт">Натюрморт</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="year-filter">Год создания:</label>
+                    <select id="year-filter">
+                        <option value="all">Все годы</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="price-min">Мин. цена (₽):</label>
+                    <input type="number" id="price-min" placeholder="От" min="0" step="10000">
+                </div>
+
+                <div class="filter-group">
+                    <label for="price-max">Макс. цена (₽):</label>
+                    <input type="number" id="price-max" placeholder="До" min="0" step="10000">
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                <button class="btn" onclick="applyFilters()">Применить фильтры</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">Сбросить</button>
+            </div>
+        </div>
+
+        <!-- Сетка галереи -->
+        <div id="gallery-container">
+            <div class="loading">Загрузка картин...</div>
+        </div>
+
+        <!-- Модальное окно для просмотра картины -->
+        <div id="imageModal" class="modal">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-content">
+                <img id="modal-image" class="modal-image" src="" alt="">
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Вячеслав Пешкин. Все права защищены.</p>
+    </footer>
+
+    <script src="js/artworks.js"></script>
+    <script src="js/gallery.js"></script>
+</body>
+</html>

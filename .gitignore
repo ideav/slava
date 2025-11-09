@@ -1,0 +1,18 @@
+# Конфигурация с секретными данными
+js/config.js
+
+# Файлы разработки
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+
+# Временные файлы
+*.tmp
+*.bak
+*~
+
+# Архивы загрузок
+*.zip
+*.docx
+slava_details.txt

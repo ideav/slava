@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Связаться с художником Вячеславом Пешкиным">
+    <title>Контакты - Вячеслав Пешкин</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Вячеслав Пешкин</h1>
+            <p>Художник-реалист, член Союза художников России</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">О художнике</a></li>
+            <li><a href="gallery.html">Галерея</a></li>
+            <li><a href="contact.html" class="active">Контакты</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">Свяжитесь с нами</h2>
+
+        <div class="contact-form">
+            <div id="success-message" class="success-message">
+                <strong>Спасибо!</strong> Ваше сообщение успешно отправлено. Мы свяжемся с вами в ближайшее время.
+            </div>
+
+            <div id="error-message" class="error-message">
+                <strong>Ошибка!</strong> <span id="error-text">Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте позже.</span>
+            </div>
+
+            <div id="selected-artwork" class="selected-artwork">
+                <h3>Выбранная картина:</h3>
+                <img id="artwork-image" src="" alt="">
+                <div id="artwork-info"></div>
+            </div>
+
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="artwork-select">Картина (необязательно):</label>
+                    <select id="artwork-select" name="artwork">
+                        <option value="">Общий запрос</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Ваше имя: *</label>
+                    <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email: *</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Телефон:</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Сообщение: *</label>
+                    <textarea id="message" name="message" required placeholder="Расскажите, что вас интересует..."></textarea>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">Отправить сообщение</button>
+            </form>
+
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+                <h3>Настройка уведомлений</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Для получения уведомлений о новых запросах необходимо настроить конфигурацию:</p>
+
+                <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
+                    <h4>Email уведомления:</h4>
+                    <p style="font-size: 0.9rem;">Создайте файл <code>config.js</code> в папке <code>js/</code> с настройками EmailJS.</p>
+                </div>
+
+                <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
+                    <h4>Telegram уведомления:</h4>
+                    <p style="font-size: 0.9rem;">Настройте Telegram Bot API в файле <code>config.js</code>.</p>
+                </div>
+
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Подробные инструкции по настройке см. в файле README.md</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Вячеслав Пешкин. Все права защищены.</p>
+    </footer>
+
+    <!-- Optional: EmailJS library (uncomment and add your public key when configured) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script> -->
+    <!-- <script>emailjs.init('YOUR_PUBLIC_KEY');</script> -->
+
+    <!-- Config file (optional, create from template) -->
+    <script src="js/config.js"></script>
+
+    <script src="js/artworks.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>
