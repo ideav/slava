@@ -1,5 +1,6 @@
 # Конфигурация с секретными данными
 js/config.js
+api/config.php
 
 # Файлы разработки
 .DS_Store
