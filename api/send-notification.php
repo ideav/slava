@@ -88,7 +88,7 @@ if ($config['email']['enabled']) {
         error_log('Email error: ' . $e->getMessage());
     }
 }
-
+/*
 // Отправка в Telegram
 if ($config['telegram']['enabled']) {
     try {
@@ -102,7 +102,7 @@ if ($config['telegram']['enabled']) {
         error_log('Telegram error: ' . $e->getMessage());
     }
 }
-
+*/
 // Проверяем результат
 $success = $results['email'] || $results['telegram'];
 
