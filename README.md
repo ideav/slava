@@ -22,8 +22,11 @@ slava/
 │   ├── artworks.js        # Данные о картинах
 │   ├── gallery.js         # Функциональность галереи
 │   ├── contact.js         # Обработка формы контакта
-│   ├── config.template.js # Шаблон конфигурации
-│   └── config.js          # Ваша конфигурация (создайте из шаблона)
+│   └── config.template.js # Устаревший шаблон (использовался для EmailJS)
+├── api/
+│   ├── send-notification.php  # PHP скрипт для отправки уведомлений
+│   ├── config.template.php    # Шаблон конфигурации
+│   └── config.php             # Ваша конфигурация (создайте из шаблона)
 └── images/
     ├── about/             # Фотографии художника
     └── gallery/           # Изображения картин
@@ -33,7 +36,7 @@ slava/
 
 ### 1. Локальный запуск
 
-Для локального просмотра сайта:
+Для локального просмотра сайта необходим веб-сервер с поддержкой PHP 7.4+:
 
 1. Склонируйте репозиторий:
    ```bash
@@ -41,84 +44,76 @@ slava/
    cd slava
    ```
 
-2. Откройте `index.html` в браузере или используйте локальный сервер:
+2. Запустите локальный PHP сервер:
    ```bash
-   # Используя Python 3
-   python -m http.server 8000
-
-   # Или используя Node.js
-   npx http-server
+   # Используя встроенный PHP сервер
+   php -S localhost:8000
    ```
+
+   Или настройте Apache/Nginx с PHP поддержкой.
 
 3. Откройте в браузере: `http://localhost:8000`
 
 ### 2. Настройка уведомлений
 
-#### Email уведомления через Яндекс SMTP (EmailJS)
+Уведомления теперь обрабатываются через PHP на стороне сервера, что обеспечивает безопасность API ключей.
 
-1. Зарегистрируйтесь на [EmailJS](https://www.emailjs.com/)
+#### Создание конфигурационного файла
 
-2. Создайте Email Service с Яндекс SMTP:
-   - Выберите "Add New Service"
-   - Выберите провайдер "Yandex" или "Custom SMTP"
-   - Настройки для Яндекса:
-     - **SMTP Server**: `smtp.yandex.ru`
-     - **Port**: `465` (SSL) или `587` (TLS)
-     - **Username**: ваш email на Яндексе (например, `user@yandex.ru`)
-     - **Password**: пароль приложения (получите в настройках безопасности Яндекса)
-   - Сохраните Service ID
-
-3. Создайте Email Template в EmailJS:
-   - Выберите "Email Templates" → "Create New Template"
-   - В поле "Content" добавьте: `{{full_message}}`
-   - Template будет получать отформатированное письмо из config.js
-   - Сохраните Template ID
-
-4. Получите Public Key:
-   - Перейдите в раздел "Account" → "General"
-   - Скопируйте ваш Public Key
-
-5. Создайте файл `js/config.js` из шаблона:
+1. Создайте файл `api/config.php` из шаблона:
    ```bash
-   cp js/config.template.js js/config.js
+   cp api/config.template.php api/config.php
    ```
 
-6. Заполните данные в `js/config.js`:
-   ```javascript
-   emailjs: {
-       enabled: true,
-       serviceId: 'YOUR_SERVICE_ID',
-       templateId: 'YOUR_TEMPLATE_ID',
-       publicKey: 'YOUR_PUBLIC_KEY'
-   }
+#### Email уведомления через SMTP
+
+Настройте отправку email через любой SMTP сервер (Яндекс, Gmail, Mail.ru и др.):
+
+1. Откройте `api/config.php` и заполните секцию `email`:
+
+   ```php
+   'email' => [
+       'enabled' => true,
+       'to_email' => 'ваш-email@yandex.ru',        // Куда приходят уведомления
+       'from_email' => 'noreply@yourdomain.ru',    // От кого письмо
+       'smtp_host' => 'smtp.yandex.ru',
+       'smtp_port' => 465,
+       'smtp_user' => 'ваш-email@yandex.ru',
+       'smtp_pass' => 'пароль-приложения',
+   ]
    ```
 
-7. Настройте шаблон письма в `js/config.js`:
-   ```javascript
-   emailTemplate: `Новый запрос с сайта Вячеслава Пешкина
+2. **Для Яндекса** - получите пароль приложения:
+   - Перейдите на https://id.yandex.ru/security
+   - Включите двухфакторную аутентификацию (если не включена)
+   - Создайте пароль приложения для SMTP
+   - Используйте порт `465` (SSL) или `587` (TLS)
 
-Контактная информация:
-Имя: {{from_name}}
-Email: {{from_email}}
-Телефон: {{phone}}
+3. **Для Gmail** - получите пароль приложения:
+   - Перейдите в настройки аккаунта Google
+   - Безопасность → Двухэтапная аутентификация
+   - Пароли приложений → Создать пароль
+   - Используйте `smtp.gmail.com` и порт `465`
 
-Интересующая картина:
-{{artwork}}
+4. **Для Mail.ru**:
+   - Используйте `smtp.mail.ru` и порт `465`
+   - Включите в настройках "Доступ по паролю приложения"
 
-Сообщение:
-{{message}}
+5. Настройте шаблон письма в `api/config.php`:
+   ```php
+   'emailTemplate' => 'Новый запрос с сайта Вячеслава Пешкина
 
----
-С уважением,
-Форма обратной связи сайта`
+   Контактная информация:
+   Имя: {{from_name}}
+   Email: {{from_email}}
+   Телефон: {{phone}}
+
+   Интересующая картина:
+   {{artwork}}
+
+   Сообщение:
+   {{message}}'
    ```
-
-   Вы можете редактировать этот шаблон локально по своему усмотрению.
-
-**Примечание**: Для получения пароля приложения Яндекса:
-- Перейдите на https://id.yandex.ru/security
-- Включите двухфакторную аутентификацию (если не включена)
-- Создайте пароль для приложения EmailJS
 
 #### Telegram уведомления
 
@@ -132,38 +127,37 @@ Email: {{from_email}}
    - Перейдите на `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`
    - Найдите `"chat":{"id":123456789}` - это ваш Chat ID
 
-3. Заполните данные Telegram в `js/config.js`:
-   ```javascript
-   telegram: {
-       enabled: true,
-       botToken: 'YOUR_BOT_TOKEN',
-       chatId: 'YOUR_CHAT_ID'
-   }
+3. Заполните данные в `api/config.php`:
+   ```php
+   'telegram' => [
+       'enabled' => true,
+       'bot_token' => 'YOUR_BOT_TOKEN',
+       'chat_id' => 'YOUR_CHAT_ID'
+   ]
    ```
 
-⚠️ **ВАЖНО**: Файл `js/config.js` содержит секретные данные и уже добавлен в `.gitignore`. Не публикуйте его в открытом доступе!
+⚠️ **ВАЖНО**: Файл `api/config.php` содержит секретные данные и уже добавлен в `.gitignore`. Не публикуйте его в открытом доступе!
 
-### 3. Деплой на GitHub Pages
+### 3. Деплой
 
-1. Перейдите в Settings репозитория
-2. Выберите Pages в левом меню
-3. В Source выберите ветку `main` и папку `/ (root)`
-4. Сохраните настройки
-5. Сайт будет доступен по адресу: `https://ideav.github.io/slava/`
+#### Хостинг с поддержкой PHP
 
-### 4. Деплой на другие платформы
+Сайт требует веб-сервер с поддержкой PHP 7.4+ для работы уведомлений. Подходящие варианты хостинга:
 
-#### Netlify
+- **Shared Hosting**: Beget, TimeWeb, Reg.ru (любой хостинг с PHP)
+- **VPS/VDS**: с установленным Apache/Nginx + PHP
+- **Cloud Platforms**: AWS, Google Cloud, Azure (с PHP runtime)
 
-1. Перетащите папку проекта в [Netlify Drop](https://app.netlify.com/drop)
-2. Настройте переменные окружения в Netlify для безопасного хранения конфигурации
+**Примечание**: GitHub Pages не поддерживает PHP, поэтому для работы уведомлений необходим хостинг с PHP.
 
-#### Vercel
+### 4. Загрузка на хостинг
 
-```bash
-npm i -g vercel
-vercel
-```
+После загрузки файлов на хостинг:
+
+1. Убедитесь, что PHP версии 7.4+ установлен
+2. Создайте `api/config.php` из шаблона
+3. Настройте права доступа к файлам (обычно 644 для файлов, 755 для папок)
+4. Проверьте работу формы обратной связи
 
 ## Функциональность
 
@@ -216,7 +210,8 @@ vercel
 - HTML5
 - CSS3 (Grid, Flexbox)
 - Vanilla JavaScript (ES6+)
-- [EmailJS](https://www.emailjs.com/) - для отправки email
+- PHP 7.4+ - для серверной обработки уведомлений
+- SMTP (Яндекс, Gmail, Mail.ru и др.) - для отправки email
 - [Telegram Bot API](https://core.telegram.org/bots/api) - для Telegram уведомлений
 
 ## Браузерная совместимость

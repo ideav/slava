@@ -74,16 +74,16 @@
 
             <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
                 <h3>Настройка уведомлений</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Для получения уведомлений о новых запросах необходимо настроить конфигурацию:</p>
+                <p style="color: #666; margin-bottom: 1rem;">Для получения уведомлений о новых запросах необходимо настроить PHP конфигурацию на сервере:</p>
 
                 <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
                     <h4>Email уведомления:</h4>
-                    <p style="font-size: 0.9rem;">Создайте файл <code>config.js</code> в папке <code>js/</code> с настройками EmailJS.</p>
+                    <p style="font-size: 0.9rem;">Настройте SMTP в файле <code>api/config.php</code> (используйте Яндекс, Gmail или другой SMTP сервер).</p>
                 </div>
 
                 <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
                     <h4>Telegram уведомления:</h4>
-                    <p style="font-size: 0.9rem;">Настройте Telegram Bot API в файле <code>config.js</code>.</p>
+                    <p style="font-size: 0.9rem;">Настройте Telegram Bot API в файле <code>api/config.php</code>.</p>
                 </div>
 
                 <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Подробные инструкции по настройке см. в файле README.md</p>
@@ -94,18 +94,6 @@
     <footer>
         <p>&copy; <span id="copyright-year"></span> Вячеслав Пешкин. Все права защищены.</p>
     </footer>
-
-    <!-- EmailJS library для работы с Яндекс SMTP -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-    <!-- Config file (создайте из config.template.js) -->
-    <script src="js/config.js"></script>
-    <script>
-        // Инициализация EmailJS с ключом из конфигурации
-        if (typeof emailjs !== 'undefined' && window.emailjsConfig && window.emailjsConfig.emailjs.publicKey) {
-            emailjs.init(window.emailjsConfig.emailjs.publicKey);
-        }
-    </script>
 
     <script src="js/artworks.js"></script>
     <script src="js/contact.js"></script>

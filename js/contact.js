@@ -1,54 +1,6 @@
-// Загрузка конфигурации (если существует)
-let config = {
-    emailjs: {
-        enabled: false,
-        serviceId: '',
-        templateId: '',
-        publicKey: ''
-    },
-    emailTemplate: '', // Шаблон письма из конфигурации
-    telegram: {
-        enabled: false,
-        botToken: '',
-        chatId: ''
-    }
-};
-
-// Попытка загрузить config.js если он существует
-try {
-    if (typeof window.emailjsConfig !== 'undefined') {
-        config = window.emailjsConfig;
-    }
-} catch (e) {
-    console.log('Config file not found, using defaults');
-}
-
-// Функция для форматирования письма по шаблону
-function formatEmailFromTemplate(template, data) {
-    if (!template) {
-        // Если шаблон не задан, используем стандартный формат
-        return `Новый запрос с сайта Вячеслава Пешкина
-
-Контактная информация:
-Имя: ${data.from_name}
-Email: ${data.from_email}
-Телефон: ${data.phone || 'не указан'}
-
-Интересующая картина:
-${data.artwork}
-
-Сообщение:
-${data.message}`;
-    }
-
-    // Заменяем переменные в шаблоне
-    return template
-        .replace(/\{\{from_name\}\}/g, data.from_name)
-        .replace(/\{\{from_email\}\}/g, data.from_email)
-        .replace(/\{\{phone\}\}/g, data.phone || 'не указан')
-        .replace(/\{\{artwork\}\}/g, data.artwork)
-        .replace(/\{\{message\}\}/g, data.message);
-}
+// Конфигурация API endpoint
+// Укажите путь к вашему PHP скрипту
+const API_ENDPOINT = 'api/send-notification.php';
 
 // Заполнение select с картинами
 function populateArtworkSelect() {
@@ -127,94 +79,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Формируем текст сообщения
-        const messageText = `
-🎨 Новый запрос с сайта Вячеслава Пешкина
-
-👤 Имя: ${formData.name}
-📧 Email: ${formData.email}
-📱 Телефон: ${formData.phone || 'не указан'}
-
-🖼 Картина: ${artworkInfo}
-
-💬 Сообщение:
-${formData.message}
-        `.trim();
-
+        // Отправка данных на PHP backend
         try {
-            // Отправка через EmailJS (если настроено)
-            let emailSent = false;
-            if (config.emailjs.enabled && typeof emailjs !== 'undefined') {
-                try {
-                    // Подготовка данных для шаблона
-                    const emailData = {
-                        from_name: formData.name,
-                        from_email: formData.email,
-                        phone: formData.phone || 'не указан',
-                        artwork: artworkInfo,
-                        message: formData.message
-                    };
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone || '',
+                    artwork: artworkInfo,
+                    message: formData.message
+                })
+            });
 
-                    // Форматируем письмо по шаблону из config.js
-                    const formattedEmail = formatEmailFromTemplate(config.emailTemplate, emailData);
+            const result = await response.json();
 
-                    await emailjs.send(
-                        config.emailjs.serviceId,
-                        config.emailjs.templateId,
-                        {
-                            from_name: emailData.from_name,
-                            from_email: emailData.from_email,
-                            phone: emailData.phone,
-                            artwork: emailData.artwork,
-                            message: emailData.message,
-                            full_message: formattedEmail // Используем отформатированное письмо
-                        },
-                        config.emailjs.publicKey
-                    );
-                    emailSent = true;
-                    console.log('Email sent successfully');
-                } catch (emailError) {
-                    console.error('Email error:', emailError);
-                }
-            }
-
-            // Отправка в Telegram (если настроено)
-            let telegramSent = false;
-            if (config.telegram.enabled && config.telegram.botToken && config.telegram.chatId) {
-                try {
-                    const telegramUrl = `https://api.telegram.org/bot${config.telegram.botToken}/sendMessage`;
-                    const response = await fetch(telegramUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            chat_id: config.telegram.chatId,
-                            text: messageText,
-                            parse_mode: 'HTML'
-                        })
-                    });
-
-                    if (response.ok) {
-                        telegramSent = true;
-                        console.log('Telegram message sent successfully');
-                    }
-                } catch (telegramError) {
-                    console.error('Telegram error:', telegramError);
-                }
-            }
-
-            // Показываем результат
-            if (emailSent || telegramSent || (!config.emailjs.enabled && !config.telegram.enabled)) {
+            if (response.ok && result.success) {
                 showSuccess();
                 document.getElementById('contact-form').reset();
                 document.getElementById('selected-artwork').classList.remove('show');
+                console.log('Уведомление отправлено:', result.details);
             } else {
-                showError('Не удалось отправить сообщение. Проверьте настройки уведомлений.');
+                const errorMessage = result.message || 'Не удалось отправить сообщение';
+                showError(errorMessage);
+                console.error('Ошибка:', result);
             }
         } catch (error) {
-            console.error('Error:', error);
-            showError('Произошла ошибка при отправке сообщения.');
+            console.error('Ошибка сети:', error);
+            showError('Произошла ошибка при отправке сообщения. Проверьте подключение к интернету.');
         }
     });
 });
