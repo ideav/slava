@@ -79,10 +79,13 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 Вячеслав Пешкин. Все права защищены.</p>
+        <p>&copy; <span id="copyright-year"></span> Вячеслав Пешкин. Все права защищены.</p>
     </footer>
 
     <script src="js/artworks.js"></script>
     <script src="js/gallery.js"></script>
+    <script>
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
