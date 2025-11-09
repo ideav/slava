@@ -6,6 +6,7 @@ let config = {
         templateId: '',
         publicKey: ''
     },
+    emailTemplate: '', // Шаблон письма из конфигурации
     telegram: {
         enabled: false,
         botToken: '',
@@ -20,6 +21,33 @@ try {
     }
 } catch (e) {
     console.log('Config file not found, using defaults');
+}
+
+// Функция для форматирования письма по шаблону
+function formatEmailFromTemplate(template, data) {
+    if (!template) {
+        // Если шаблон не задан, используем стандартный формат
+        return `Новый запрос с сайта Вячеслава Пешкина
+
+Контактная информация:
+Имя: ${data.from_name}
+Email: ${data.from_email}
+Телефон: ${data.phone || 'не указан'}
+
+Интересующая картина:
+${data.artwork}
+
+Сообщение:
+${data.message}`;
+    }
+
+    // Заменяем переменные в шаблоне
+    return template
+        .replace(/\{\{from_name\}\}/g, data.from_name)
+        .replace(/\{\{from_email\}\}/g, data.from_email)
+        .replace(/\{\{phone\}\}/g, data.phone || 'не указан')
+        .replace(/\{\{artwork\}\}/g, data.artwork)
+        .replace(/\{\{message\}\}/g, data.message);
 }
 
 // Заполнение select с картинами
@@ -118,16 +146,28 @@ ${formData.message}
             let emailSent = false;
             if (config.emailjs.enabled && typeof emailjs !== 'undefined') {
                 try {
+                    // Подготовка данных для шаблона
+                    const emailData = {
+                        from_name: formData.name,
+                        from_email: formData.email,
+                        phone: formData.phone || 'не указан',
+                        artwork: artworkInfo,
+                        message: formData.message
+                    };
+
+                    // Форматируем письмо по шаблону из config.js
+                    const formattedEmail = formatEmailFromTemplate(config.emailTemplate, emailData);
+
                     await emailjs.send(
                         config.emailjs.serviceId,
                         config.emailjs.templateId,
                         {
-                            from_name: formData.name,
-                            from_email: formData.email,
-                            phone: formData.phone,
-                            artwork: artworkInfo,
-                            message: formData.message,
-                            full_message: messageText
+                            from_name: emailData.from_name,
+                            from_email: emailData.from_email,
+                            phone: emailData.phone,
+                            artwork: emailData.artwork,
+                            message: emailData.message,
+                            full_message: formattedEmail // Используем отформатированное письмо
                         },
                         config.emailjs.publicKey
                     );
