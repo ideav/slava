@@ -95,12 +95,17 @@
         <p>&copy; <span id="copyright-year"></span> Вячеслав Пешкин. Все права защищены.</p>
     </footer>
 
-    <!-- Optional: EmailJS library (uncomment and add your public key when configured) -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script> -->
-    <!-- <script>emailjs.init('YOUR_PUBLIC_KEY');</script> -->
+    <!-- EmailJS library для работы с Яндекс SMTP -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-    <!-- Config file (optional, create from template) -->
+    <!-- Config file (создайте из config.template.js) -->
     <script src="js/config.js"></script>
+    <script>
+        // Инициализация EmailJS с ключом из конфигурации
+        if (typeof emailjs !== 'undefined' && window.emailjsConfig && window.emailjsConfig.emailjs.publicKey) {
+            emailjs.init(window.emailjsConfig.emailjs.publicKey);
+        }
+    </script>
 
     <script src="js/artworks.js"></script>
     <script src="js/contact.js"></script>

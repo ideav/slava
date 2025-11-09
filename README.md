@@ -54,26 +54,36 @@ slava/
 
 ### 2. Настройка уведомлений
 
-#### Email уведомления (EmailJS)
+#### Email уведомления через Яндекс SMTP (EmailJS)
 
 1. Зарегистрируйтесь на [EmailJS](https://www.emailjs.com/)
-2. Создайте Email Service (например, Gmail)
-3. Создайте Email Template со следующими переменными:
-   - `{{from_name}}` - имя отправителя
-   - `{{from_email}}` - email отправителя
-   - `{{phone}}` - телефон
-   - `{{artwork}}` - название картины
-   - `{{message}}` - сообщение
-   - `{{full_message}}` - полное форматированное сообщение
 
-4. Получите ваш Public Key в разделе Account
+2. Создайте Email Service с Яндекс SMTP:
+   - Выберите "Add New Service"
+   - Выберите провайдер "Yandex" или "Custom SMTP"
+   - Настройки для Яндекса:
+     - **SMTP Server**: `smtp.yandex.ru`
+     - **Port**: `465` (SSL) или `587` (TLS)
+     - **Username**: ваш email на Яндексе (например, `user@yandex.ru`)
+     - **Password**: пароль приложения (получите в настройках безопасности Яндекса)
+   - Сохраните Service ID
+
+3. Создайте Email Template в EmailJS:
+   - Выберите "Email Templates" → "Create New Template"
+   - В поле "Content" добавьте: `{{full_message}}`
+   - Template будет получать отформатированное письмо из config.js
+   - Сохраните Template ID
+
+4. Получите Public Key:
+   - Перейдите в раздел "Account" → "General"
+   - Скопируйте ваш Public Key
 
 5. Создайте файл `js/config.js` из шаблона:
    ```bash
    cp js/config.template.js js/config.js
    ```
 
-6. Заполните данные EmailJS в `js/config.js`:
+6. Заполните данные в `js/config.js`:
    ```javascript
    emailjs: {
        enabled: true,
@@ -83,11 +93,32 @@ slava/
    }
    ```
 
-7. Подключите библиотеку EmailJS в `contact.html` (добавьте перед закрывающим тегом `</body>`):
-   ```html
-   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-   <script>emailjs.init('YOUR_PUBLIC_KEY');</script>
+7. Настройте шаблон письма в `js/config.js`:
+   ```javascript
+   emailTemplate: `Новый запрос с сайта Вячеслава Пешкина
+
+Контактная информация:
+Имя: {{from_name}}
+Email: {{from_email}}
+Телефон: {{phone}}
+
+Интересующая картина:
+{{artwork}}
+
+Сообщение:
+{{message}}
+
+---
+С уважением,
+Форма обратной связи сайта`
    ```
+
+   Вы можете редактировать этот шаблон локально по своему усмотрению.
+
+**Примечание**: Для получения пароля приложения Яндекса:
+- Перейдите на https://id.yandex.ru/security
+- Включите двухфакторную аутентификацию (если не включена)
+- Создайте пароль для приложения EmailJS
 
 #### Telegram уведомления
 
